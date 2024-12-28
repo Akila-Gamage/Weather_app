@@ -385,7 +385,7 @@ struct WeatherView: View {
             }
             .padding()
             .background(
-                WeatherBackgroundUtils.gradient(for: viewModel.weatherData?.current.weather.first?.main.rawValue ?? "Clear")
+                WeatherUtils.gradient(for: viewModel.weatherData?.current.weather.first?.main.rawValue ?? "Clear")
             )
             .toolbar {
                 if viewModel.isPresentedAsSheets == true && viewModel.onWeatherCardTap == false {
@@ -415,7 +415,12 @@ struct WeatherView: View {
                 if viewModel.isPresentedAsSheets == false && viewModel.onWeatherCardTap == false && viewModel.isCurrentLocation == true {
                     Task {
                         await viewModel.checkLocationAuthorization()
-//                        await viewModel.fetchWeatherData()
+                        await viewModel.fetchWeatherData()
+                        await viewModel.fetchAqiData()
+                    }
+                }
+                else{
+                    Task {
                         await viewModel.fetchAqiData()
                     }
                 }
@@ -452,7 +457,7 @@ struct SingleHourlyView: View {
                 .foregroundStyle(.white)
                 .font(.system(size: 14, weight: .semibold))
             
-            let weatherInfo = WeatherIconUtils.sfSymbol(for: hourlyData.weather.first?.icon ?? "")
+            let weatherInfo = WeatherUtils.sfSymbol(for: hourlyData.weather.first?.icon ?? "")
             Image(systemName: weatherInfo.icon)
                 .resizable()
                 .scaledToFit()
@@ -478,7 +483,7 @@ struct SingleDailyView: View {
                 .foregroundStyle(Color.white)
                 .frame(maxWidth: 100, alignment: .leading)
             Spacer()
-            let weatherInfo = WeatherIconUtils.sfSymbol(for: dailyData.weather.first?.icon ?? "")
+            let weatherInfo = WeatherUtils.sfSymbol(for: dailyData.weather.first?.icon ?? "")
             Image(systemName: weatherInfo.icon)
                 .resizable()
                 .scaledToFit()
