@@ -8,7 +8,6 @@
 import Foundation
 import CoreLocation
 import SwiftUICore
-import SwiftUI
 
 class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var selectedTab: String = "weather"
@@ -22,9 +21,8 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var currentLocation: LocationDataModel?
     @Published var isError: Bool = false
     @Published var isCurrentLocation: Bool = true
+    @Published var isMetric: Bool = true
     @Published var searchedLocation: String = ""
-    
-    @Environment(\.modelContext) private var modelContext
 
     let geocoder = CLGeocoder()
     let locationManager = CLLocationManager()
@@ -50,7 +48,8 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func fetchWeatherData() async {
-        let url = URL(string: "https://api.openweathermap.org/data/3.0/onecall?lat=\(cordinates.latitude)&lon=\(cordinates.longitude)&appid=c66f630c5833baf90030fbb2d82ead00&units=metric")
+        let unitsParameter = isMetric ? "&units=metric" : "&units=imperial"
+        let url = URL(string: "https://api.openweathermap.org/data/3.0/onecall?lat=\(cordinates.latitude)&lon=\(cordinates.longitude)&appid=c66f630c5833baf90030fbb2d82ead00\(unitsParameter)")
         
         guard let unwrapperUrl = url else {
             print("Invalid URL")
@@ -74,7 +73,7 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 DispatchQueue.main.async {
                     self.weatherData = decodedData
 //                    if let weatherData = self.weatherData {
-//                    print(self.weatherData)
+//                    print(decodedData)
 //                    } else {
 //                        print("Weather data is nil.")
 //                    }
@@ -94,7 +93,8 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func fetchWeatherDataFromLocation(location: LocationDataModel) async {
-        let url = URL(string: "https://api.openweathermap.org/data/3.0/onecall?lat=\(location.lat)&lon=\(location.lon)&appid=c66f630c5833baf90030fbb2d82ead00&units=metric")
+        let unitsParameter = isMetric ? "&units=metric" : "&units=imperial"
+        let url = URL(string: "https://api.openweathermap.org/data/3.0/onecall?lat=\(location.lat)&lon=\(location.lon)&appid=c66f630c5833baf90030fbb2d82ead00\(unitsParameter)")
         
         guard let unwrapperUrl = url else {
             print("Invalid URL")
@@ -210,6 +210,7 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
             if let location = locationManager.location?.coordinate {
                 DispatchQueue.main.async {
                     self.lastKnownLocation = location
+                    self.cordinates = location
                     self.currentLocation = LocationDataModel(
                         name: "current location",
                         lat: location.latitude,
