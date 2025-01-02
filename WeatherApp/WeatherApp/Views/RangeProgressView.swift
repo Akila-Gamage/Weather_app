@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// Temp progress view style
 struct TempRangeProgressView: ProgressViewStyle {
     let range: ClosedRange<Double>
     let minTemp: Double
@@ -63,6 +64,7 @@ struct TempRangeProgressView: ProgressViewStyle {
     }
 }
 
+// Aqi progess view style
 struct AqiRangeProgressView: ProgressViewStyle {
     let range: ClosedRange<Double>
     let customValue: Int
