@@ -11,11 +11,10 @@ import _SwiftData_SwiftUI
 
 struct MapView: View {
     @EnvironmentObject var viewModel: ViewModel
-//    @Binding var selectedCity : City?
     @Query var locationData: [LocationDataModel]
-    @State var mapAnnotations: [Place] = []
-    @State var currentPlace: Place?
-    @State var selectedPlace: Place?
+    @State var mapAnnotations: [MapAnnotationModel] = []
+    @State var currentPlace: MapAnnotationModel?
+    @State var selectedPlace: MapAnnotationModel?
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0),
         span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
@@ -26,6 +25,7 @@ struct MapView: View {
             Map(coordinateRegion: $region,
                 annotationItems: mapAnnotations
             ) { place in
+                // Map annotation view
                 MapAnnotation(coordinate: place.coordinate) {
                     VStack(spacing: 0) {
                         Text(place.name)
@@ -70,9 +70,9 @@ struct MapView: View {
             }
             .ignoresSafeArea(.all)
             .onAppear {
-                var annotations: [Place] = []
+                var annotations: [MapAnnotationModel] = []
                 for location in locationData {
-                    let place = viewModel.convertToMapAnnotation(location: location) // Convert a single location
+                    let place = viewModel.convertToMapAnnotation(location: location)
                     annotations.append(place)
                 }
                 mapAnnotations = annotations
