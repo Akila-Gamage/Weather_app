@@ -22,6 +22,7 @@ struct WeatherView: View {
             ZStack{
                 VStack{
                     ScrollView(showsIndicators: false) {
+                        //Current weather details
                         VStack{
                             if(viewModel.isCurrentLocation == true ){
                                 HStack {
@@ -221,7 +222,7 @@ struct WeatherView: View {
                                 .padding(EdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 0))
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 ZStack {
-                                    ForEach(0..<tickCount) { i in
+                                    ForEach(0..<tickCount, id: \.self) { i in
                                         let angle = Double(i) / Double(tickCount) * 270.0
                                         VStack {
                                             Rectangle()
@@ -275,7 +276,7 @@ struct WeatherView: View {
                                             .foregroundStyle(Color.white)
                                             .font(.system(size: 14, weight: .medium))
                                         Spacer()
-                                        Text("\(viewModel.weatherData?.current.windSpeed ?? 0.0, specifier: "%.0f") m/s")
+                                        Text("\(viewModel.weatherData?.current.windSpeed ?? 0.0, specifier: "%.0f") \(viewModel.isMetric ? "m/s" : "mph")")
                                             .foregroundStyle(Color.secondary)
                                             .font(.system(size: 14, weight: .medium))
                                     }
@@ -286,7 +287,7 @@ struct WeatherView: View {
                                             .foregroundStyle(Color.white)
                                             .font(.system(size: 14, weight: .medium))
                                         Spacer()
-                                        Text("\(viewModel.weatherData?.current.windGust ?? 0.0, specifier: "%.0f") m/s")
+                                        Text("\(viewModel.weatherData?.current.windGust ?? 0.0, specifier: "%.0f") \(viewModel.isMetric ? "m/s" : "mph")")
                                             .foregroundStyle(Color.secondary)
                                             .font(.system(size: 14, weight: .medium))
                                     }
@@ -307,19 +308,16 @@ struct WeatherView: View {
                                 }
                                 ZStack {
                                     VStack {
-                                        
-                                        //                                    Image(systemName: "arrow.up")
-                                        //                                        .foregroundStyle(Color.white)
                                         Text("\(viewModel.weatherData?.current.windSpeed ?? 0.0, specifier: "%.0f")")
                                             .font(.system(size: 25, weight: .bold))
                                             .foregroundStyle(Color.white)
-                                        Text("m/s")
+                                        Text("\(viewModel.isMetric ? "m/s" : "mph")")
                                             .foregroundStyle(Color.white)
                                             .font(.system(size: 18))
                                     }
                                     
                                     // Compass Ticks
-                                    ForEach(0..<tickCount2) { i in
+                                    ForEach(0..<tickCount2, id: \.self) { i in
                                         let angle = Double(i) / Double(tickCount2) * 360.0
                                         
                                         // Skip ticks aligned with cardinal directions (N, E, S, W)
@@ -429,6 +427,7 @@ struct WeatherView: View {
         }
     }
     
+    // add to favourites function
     func addToFavorite() {
         modelContext.insert(LocationDataModel(
                 name: viewModel.searchedLocation,
@@ -449,6 +448,7 @@ struct WeatherView: View {
 //    WeatherView()
 //}
 
+// Single component of hourly view
 struct SingleHourlyView: View {
     let hourlyData: Hourly
     var body: some View {
@@ -472,6 +472,7 @@ struct SingleHourlyView: View {
     }
 }
 
+// Single component of dailyveiw
 struct SingleDailyView: View {
     let dailyData: Daily
     let highestTemp: Double
