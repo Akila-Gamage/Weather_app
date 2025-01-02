@@ -18,7 +18,7 @@ struct AirPolutionView: View {
                         let aqi = viewModel.airQualityData?.list.first?.main.aqi ?? 0
                         let description = AirQualityUtils.getAQIDescription(for: aqi)
                         let title = AirQualityUtils.getAQITitle(for: aqi)
-                        Text("Low")
+                        Text("\(title)")
                             .foregroundStyle(.white)
                             .font(.system(size: 20, weight: .semibold))
                             .frame(maxWidth: .infinity, alignment: .leading)
