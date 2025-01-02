@@ -127,11 +127,6 @@ struct SavedLocationView: View {
                             }
                         }
 
-//                        Section() {
-//                            Button(action: {}) {
-//                                Label("Units", systemImage: "chart.bar")
-//                            }
-//                        }
                     }
                     label: {
                         Label("", systemImage: "ellipsis.circle")
@@ -267,78 +262,5 @@ struct WeatherCard: View {
     }
 }
 
-
-//struct WeatherCard: View {
-//    @EnvironmentObject var viewModel: ViewModel
-//    // Hardcoded location and weather data
-//    let locationName: String = "New York"
-//    let temperature: Double = 23.0
-//    let weatherCondition: String = "Clear"
-//    let highTemp: Double = 28.0
-//    let lowTemp: Double = 18.0
-//    let time: String = "12:00 PM"
-//    let currentLocation : Bool
-//
-//    var body: some View {
-//        HStack {
-//            VStack(alignment: .leading) {
-//                if(currentLocation){
-//                    HStack {
-//                        Text("Current Location")
-//                            .foregroundStyle(.white)
-//                            .font(.system(size: 15, weight: .bold))
-//                        Image(systemName: "location")
-//                            .frame(width: 6, height: 6)
-//                            .foregroundStyle(Color.white)
-//                            .padding(EdgeInsets(top: 0, leading: 3, bottom: 0, trailing: 0))
-//                    }
-//                }
-//                else {
-//                    Text(locationName.capitalized)
-//                        .foregroundStyle(.white)
-//                        .font(.system(size: 20, weight: .bold))
-//                }
-//                Text(time)
-//                    .foregroundStyle(Color.white.opacity(0.8))
-//                    .font(.system(size: 16, weight: .bold))
-//                Spacer()
-//                Text(weatherCondition)
-//                    .foregroundStyle(Color.white.opacity(0.8))
-//                    .font(.system(size: 16, weight: .bold))
-//            }
-//            VStack(alignment: .trailing) {
-//                Text("\(temperature, specifier: "%.0f")°")
-//                    .foregroundStyle(.white)
-//                    .font(.system(size: 45, weight: .light))
-//                Spacer()
-//                HStack {
-//                    Text("H:\(highTemp, specifier: "%.0f")°")
-//                        .foregroundStyle(Color.white)
-//                    Text("L:\(lowTemp, specifier: "%.0f")°")
-//                        .foregroundStyle(Color.white)
-//                }
-//                .frame(maxWidth: .infinity, alignment: .trailing)
-//            }
-//        }
-//        .padding(18)
-//        .frame(maxWidth: .infinity)
-//        .background(WeatherBackgroundUtils.gradient(for: weatherCondition))
-//        .cornerRadius(20)
-//        .onTapGesture {
-//            if (currentLocation) {
-//                viewModel.isCurrentLocation = true
-//            }
-//            else {
-//                viewModel.searchedLocation = locationName
-//            }
-//              viewModel.weatherData = weatherData
-//            // Simulate a tap gesture to update the view model and animate transition
-//            withAnimation(.spring(response: 1.0, dampingFraction: 0.7, blendDuration: 0.7)) {
-//                viewModel.onWeatherCardTap = true
-//                viewModel.selectedTab = "weather"
-//            }
-//        }
-//    }
-//}
 
 
