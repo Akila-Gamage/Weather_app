@@ -7,7 +7,7 @@
 
 import Foundation
 import CoreLocation
-import SwiftUICore
+
 
 class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var selectedTab: String = "weather"
@@ -78,7 +78,6 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 //                        print("Weather data is nil.")
 //                    }
                 }
-                //                isLoading = false
             case 400:
                 print("Server is not responding")
             case 500:
@@ -117,14 +116,12 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 // Ensure UI updates happen on the main thread
                 DispatchQueue.main.async {
                     self.weatherDataList.append(decodedData)
-//                    print(self.weatherDataList.first?.current.dt)
 //                    if let weatherData = self.weatherData {
 //                        print(weatherData)
 //                    } else {
 //                        print("Weather data is nil.")
 //                    }
                 }
-                //                isLoading = false
             case 400:
                 print("Server is not responding")
             case 500:
@@ -161,13 +158,13 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 
                 DispatchQueue.main.async {
                     self.airQualityData = decodedData
-                    if let airQualityData = self.airQualityData {
-                        print(airQualityData)
-                    } else {
-                        print("Weather data is nil.")
-                    }
+//                    if let airQualityData = self.airQualityData {
+//                        print(airQualityData)
+//                    } else {
+//                        print("Aqi data is nil.")
+//                    }
                 }
-                //                isLoading = false
+                
             case 400:
                 print("Server is not responding")
             case 500:
@@ -233,8 +230,8 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         lastKnownLocation = locations.first?.coordinate
     }
     
-    func convertToMapAnnotation(location: LocationDataModel) -> Place {
-        return Place(
+    func convertToMapAnnotation(location: LocationDataModel) -> MapAnnotationModel {
+        return MapAnnotationModel(
             name: location.name,
             coordinate: CLLocationCoordinate2D(latitude: location.lat, longitude: location.lon)
         )
