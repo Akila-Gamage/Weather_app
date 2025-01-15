@@ -48,6 +48,7 @@ struct SavedLocationView: View {
                                 if(!viewModel.isError){
                                     onSearchComplete = true
                                     viewModel.isPresentedAsSheets = true
+                                    viewModel.onWeatherCardTap = false
                                 }
                             }
                         }.frame(maxWidth: 60, alignment: .center)
@@ -75,7 +76,9 @@ struct SavedLocationView: View {
                                     WeatherCard(location: location.name, weatherData: weatherData, currentLocation: false)
                                 } trailingActions: { _ in
                                     SwipeAction(systemImage: "trash", backgroundColor: .red) {
-                                        removeFromFavorite(location)
+                                        withAnimation {
+                                             removeFromFavorite(location)
+                                         }
                                     }
                                     .foregroundColor(.white)
                                 }
@@ -135,50 +138,51 @@ struct SavedLocationView: View {
                     .tint(.white)
                 }
             }
-        }
-        .onAppear {
-            viewModel.onWeatherCardTap = false
-            viewModel.isCurrentLocation = false
-            Task {
-                await viewModel.checkLocationAuthorization()
-                guard let location = viewModel.currentLocation else { return }
-                await viewModel.fetchWeatherDataFromLocation(location: location)
-            }
-            for location in locationData {
+            .onAppear {
+                viewModel.onWeatherCardTap = false
+                viewModel.isCurrentLocation = false
+                viewModel.searchedLocation = ""
                 Task {
+                    await viewModel.checkLocationAuthorization()
+                    guard let location = viewModel.currentLocation else { return }
                     await viewModel.fetchWeatherDataFromLocation(location: location)
                 }
-            }
-        }
-        .onChange(of: viewModel.isMetric) {
-            viewModel.weatherDataList = []
-            Task {
-                guard let location = viewModel.currentLocation else { return }
-                await viewModel.fetchWeatherDataFromLocation(location: location)
-            }
-            for location in locationData {
-                Task {
-                    await viewModel.fetchWeatherDataFromLocation(location: location)
+                for location in locationData {
+                    Task {
+                        await viewModel.fetchWeatherDataFromLocation(location: location)
+                    }
                 }
             }
-        }
-        .onChange(of: locationData) {
-            Task {
-                guard let location = viewModel.latestLocation else { return }
-                await viewModel.fetchWeatherDataFromLocation(location: location)
+            .onChange(of: viewModel.isMetric) {
+                viewModel.weatherDataList = []
+                Task {
+                    guard let location = viewModel.currentLocation else { return }
+                    await viewModel.fetchWeatherDataFromLocation(location: location)
+                }
+                for location in locationData {
+                    Task {
+                        await viewModel.fetchWeatherDataFromLocation(location: location)
+                    }
+                }
+            }
+            .onChange(of: locationData) {
+                Task {
+                    guard let location = viewModel.latestLocation else { return }
+                    await viewModel.fetchWeatherDataFromLocation(location: location)
 
+                }
             }
         }
         
     }
     
     func removeFromFavorite(_ location: LocationDataModel) {
-        var locations = locationData
-        if let index = locationData.firstIndex(where: { $0.id == location.id }) {
-            locations.remove(at: index)
-        }
         modelContext.delete(location)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to save context: \(error)")
+        }
     }
 
 }
@@ -191,6 +195,7 @@ struct SavedLocationView: View {
 }
 
 struct WeatherCard: View {
+    @State private var offset = AnimatablePair(CGFloat(-24.0), CGFloat(0.0))
     @EnvironmentObject var viewModel: ViewModel
     let location: String
     let weatherData: WeatherDataModel?
@@ -214,9 +219,17 @@ struct WeatherCard: View {
                         .foregroundStyle(.white)
                         .font(.system(size: 20, weight: .bold))
                 }
-                Text(DateFormatterUtils.formattedDate(from: weatherData?.current.dt ?? 0, format: "hh:mm"))
-                    .foregroundStyle(Color.white.opacity(0.8))
-                    .font(.system(size: 16, weight: .bold))
+                if let timezoneOffset = weatherData?.timezoneOffset,
+                   let currentTime = weatherData?.current.dt {
+                    let formattedTime = DateFormatterUtils.formattedDateWithTimeZone(
+                        from: currentTime,
+                        format: "HH:mm",
+                        timeZone: TimeZone(secondsFromGMT: timezoneOffset)
+                    )
+                    Text(formattedTime)
+                        .foregroundStyle(Color.white.opacity(0.8))
+                        .font(.system(size: 16, weight: .bold))
+                }
                 Spacer()
                 Spacer()
                 Spacer()
@@ -247,13 +260,17 @@ struct WeatherCard: View {
         .onTapGesture {
             if (currentLocation) {
                 viewModel.isCurrentLocation = true
+                viewModel.searchedLocation = ""
             }
             else {
                 viewModel.searchedLocation = location
+                viewModel.isCurrentLocation = false
             }
             viewModel.weatherData = weatherData
             viewModel.cordinates = CLLocationCoordinate2D(latitude: weatherData?.lat ?? 0, longitude: weatherData?.lon ?? 0)
             withAnimation(.spring(response: 1.0, dampingFraction: 0.7, blendDuration: 0.7)) {
+                self.offset = AnimatablePair(CGFloat(24.0), CGFloat(0.0))
+                viewModel.isPresentedAsSheets = false
                 viewModel.onWeatherCardTap = true
                 viewModel.selectedTab = "weather"
             }
