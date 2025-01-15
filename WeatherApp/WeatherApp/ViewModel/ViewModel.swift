@@ -117,7 +117,7 @@ class ViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 DispatchQueue.main.async {
                     self.weatherDataList.append(decodedData)
 //                    if let weatherData = self.weatherData {
-//                        print(weatherData)
+//                    print(self.weatherDataList)
 //                    } else {
 //                        print("Weather data is nil.")
 //                    }
