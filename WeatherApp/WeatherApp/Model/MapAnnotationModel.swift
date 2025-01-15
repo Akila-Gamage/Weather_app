@@ -8,7 +8,7 @@
 import Foundation
 import MapKit
 
-// MARK: - PlaceData
+// MARK: - MapAnnotationData
 struct MapAnnotationModel: Identifiable {
   let id = UUID()
   var name: String
