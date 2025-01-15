@@ -80,9 +80,9 @@ struct WeatherView: View {
                                 .background(Color.secondary)
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack{
-                                    if let hourlyData = viewModel.weatherData?.hourly {
+                                    if let hourlyData = viewModel.weatherData?.hourly, let timezoneOffset = viewModel.weatherData?.timezoneOffset {
                                         ForEach(hourlyData) { hourly in
-                                            SingleHourlyView(hourlyData: hourly)
+                                            SingleHourlyView(hourlyData: hourly, timezoneOffset : timezoneOffset)
                                         }
                                     } else {
                                         Text("No data available")
@@ -389,6 +389,7 @@ struct WeatherView: View {
                 if viewModel.isPresentedAsSheets == true && viewModel.onWeatherCardTap == false {
                     ToolbarItem(placement: .topBarLeading) {
                         Button("Cancel") {
+                            viewModel.onWeatherCardTap = false
                             viewModel.isPresentedAsSheets = false
                             dismiss()
                         }
@@ -398,7 +399,9 @@ struct WeatherView: View {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button("Add") {
                                 addToFavorite()
+                                viewModel.onWeatherCardTap = false
                                 viewModel.isPresentedAsSheets = false
+                                viewModel.searchedLocation = ""
                                 dismiss()
                             }
                             .foregroundStyle(Color.white)
@@ -451,9 +454,15 @@ struct WeatherView: View {
 // Single component of hourly view
 struct SingleHourlyView: View {
     let hourlyData: Hourly
+    let timezoneOffset: Int
     var body: some View {
         VStack{
-            Text(DateFormatterUtils.formattedDate(from: Int(TimeInterval(hourlyData.dt)), format: "HH"))
+            let formattedTime = DateFormatterUtils.formattedDateWithTimeZone(
+                from: hourlyData.dt,
+                format: "HH",
+                timeZone: TimeZone(secondsFromGMT: timezoneOffset)
+            )
+            Text(formattedTime)
                 .foregroundStyle(.white)
                 .font(.system(size: 14, weight: .semibold))
             
