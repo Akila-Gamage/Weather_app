@@ -39,6 +39,14 @@ class DateFormatterUtils {
         dateFormatter.dateFormat = format
         return dateFormatter.string(from: date)
     }
+    
+    static func formattedDateWithTimeZone(from timestamp: Int, format: String, timeZone: TimeZone? = nil) -> String {
+        let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        dateFormatter.timeZone = timeZone ?? TimeZone(secondsFromGMT: 0)
+        return dateFormatter.string(from: date)
+    }
 
     static func formattedCurrentDate(format: String) -> String {
         let dateFormatter = DateFormatter()
